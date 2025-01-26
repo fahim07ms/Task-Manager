@@ -156,7 +156,14 @@ const updateTask = (taskId, updates) => {};
 
 // Toggle Task Completion
 const toggleTaskCompletion = (taskId) => {
+  // Filter out the wanted task's index
+  const taskIndex = tasks.findIndex((task) => task.id === taskIndex);
   
+  // Toggle its completion value
+  tasks[taskIndex].isCompleted = !tasks[taskIndex].isCompleted;
+
+  // Modify it in the localStorage
+  localStorage.setItem("tasks", JSON.stringify(tasks));
 };
 
 // EventListeners
