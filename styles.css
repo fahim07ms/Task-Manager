@@ -5,6 +5,18 @@ body {
   padding: 20px;
   line-height: 1.6;
 }
+
+#message {
+    visibility: hidden;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 15px;
+    color: black;
+    font-weight: 800;
+    border-radius: 15px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
 .container {
   background: #f4f4f4;
   padding: 20px;
