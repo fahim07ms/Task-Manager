@@ -138,7 +138,7 @@ const addTask = (title, description, priority) => {
     // Push it in the tasks array and modify localStorage
     tasks.push(task);
     localStorage.setItem("tasks", JSON.stringify(tasks));
-    
+
     showMessage("Task added successfully!", "success");
   } catch (err) {
     // Show error message if any
@@ -158,114 +158,211 @@ const deleteTask = (taskId) => {
 };
 
 // Update Task
-const updateTask = (taskId, updates) => {};
+const updateTask = (taskId, updates) => {
+  // Grab the task
+  const taskIndex = tasks.findIndex((task) => task.id === taskId);
+  tasks[taskIndex] = {
+    ...tasks[taskIndex],
+    ...updates,
+  };
+
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+};
 
 // Toggle Task Completion
 const toggleTaskCompletion = (taskId) => {
   // Filter out the wanted task's index
   const taskIndex = tasks.findIndex((task) => task.id === taskId);
-  console.log(taskIndex)
+
   // Toggle its completion value
   tasks[taskIndex]._isCompleted = !tasks[taskIndex]._isCompleted;
- console.log(tasks);
+
   // Modify it in the localStorage
   localStorage.setItem("tasks", JSON.stringify(tasks));
-
 };
 
 const getPriorityColor = (priority) => {
-    switch(priority)
-    {
-        case "high":
-            return "#dc6158ce";
-            break;
-        case "low":
-            return "#7ccb60ce";
-            break;
-        case "medium":
-            return "#f9fe54e2";
-            break;
-    }
+  switch (priority) {
+    case "high":
+      return "btn-high";
+      break;
+    case "medium":
+      return "btn-medium";
+      break;
+    case "low":
+      return "btn-low";
+      break;
+  }
 };
 
 // Show tasks
 const showTasks = () => {
-    // Iterate through the tasks
-    // For each task create a taskDiv
-    // Add it in the `taskList` container in the HTML
-    tasks.forEach(task => {
-        const taskDiv = document.createElement('div');
-        taskDiv.classList = ['task'];
-        taskDiv.id = task.id;
-        
-        taskDiv.innerHTML = `
-            <div class="taskToggle"><input ${task._isCompleted ? "checked" : "unchecked"} class="taskToggleCheckbox" type="checkbox" name="${task.id}" id="${task.id}" value="${task._isCompleted}"></div>
-            <div class="taskTitleName">${(task._title.length <= 30) ? task._title : (task._title.slice(0, 30)+"...")}</div>
+  // Iterate through the tasks
+  tasks.forEach((task) => {
+    // For each task create a taskDiv with class `task`
+    const taskDiv = document.createElement("div");
+    taskDiv.classList = ["task"];
+
+    // Set it's id to task's id
+    taskDiv.id = task.id;
+
+    // Add necessary HTML for the tasks
+    taskDiv.innerHTML = `
+            <div class="taskToggle"><input ${
+              task._isCompleted ? "checked" : "unchecked"
+            } class="taskToggleCheckbox" type="checkbox" name="${
+      task.id
+    }" id="${task.id}" value="${task._isCompleted}">
+            </div>
+           
+            <div class="taskTitleName">${
+              task._title.length <= 30
+                ? task._title
+                : task._title.slice(0, 30) + "..."
+            }</div>
+
             <div class="taskContent">
                 <form id="${task.id}" class="taskEditForm">
-                    <b>Title: </b><input size="50" name="title" type="text" value="${task._title}" placeholder="Task title" required><br>
+                    <b>Title: </b><input size="50" class="editTitleInput" name="title" type="text" value="${
+                      task._title
+                    }" placeholder="Task title" required><br>
                     <b>Description: </b><br>
-                    <textarea name="description" class="taskDescriptionName" placeholder="Write something...">${task._description}</textarea>
-                    <button name="save-btn" class="complete-btn" type="submit">Save</button>
+                    <textarea name="description" class="taskDescriptionName" placeholder="Write something...">${
+                      task._description
+                    }</textarea>
+                    <button name="save-btn" class="save-btn" type="submit">Save</button>
                     <button name="delete-btn" class="delete-btn" type="submit">Delete</button>
                 </form>
             </div>
-            <div class="taskPriorityName"><span style="background-color: ${getPriorityColor(task._priority)}">${task._priority[0].toUpperCase() + task._priority.slice(1)}</span></div>
+            <div class="taskPriorityName">
+                <button class="${getPriorityColor(
+                  task._priority
+                )} prioritySelectBtn">
+                    ${task._priority[0].toUpperCase() + task._priority.slice(1)}
+                </button>
+                <div id="priorityDropdown-${task.id}" class="dropdown-content">
+                    <a href="." class="dropdownContentBtn" data-priority="high">High</a>
+                    <a href="." class="dropdownContentBtn" data-priority="medium">Medium</a>
+                    <a href="." class="dropdownContentBtn" data-priority="low">Low</a>
+                </div>
+            </div>
         `;
-        if (task._isCompleted) {
-            taskDiv.classList.add("task-completed");
-        }
-        taskList.appendChild(taskDiv);
-    });
-}
+    // If the task is completed, add task-completedt to the class
+    if (task._isCompleted) {
+      taskDiv.classList.add("task-completed");
+    }
+
+    // Add it in the `taskList` container in the HTML
+    taskList.appendChild(taskDiv);
+  });
+};
 
 // Expand the individual task when clicked
 const expandTask = (taskId) => {
-    // Grab the task div and the content/expandable section
-    const taskDiv = document.getElementById(taskId);
-    const taskContent = taskDiv.querySelector('.taskContent');
+  // Grab the task div and the content/expandable section
+  const taskDiv = document.getElementById(taskId);
+  const taskContent = taskDiv.querySelector(".taskContent");
 
-    // If not expanded than expand, else shrink
-    if (taskContent.style.display === 'block') {
-        taskDiv.style.height = "35px";
-        taskContent.style.display = "none";
-        taskContent.style.visibility = "hidden";
-    } else {
-        taskDiv.style.height = "400px";
-        taskContent.style.display = "block";
-        taskContent.style.visibility = "visible";
-    }    
-}
+  // If not expanded than expand, else shrink
+  if (taskContent.style.display === "block") {
+    taskDiv.style.height = "35px";
+    taskContent.style.display = "none";
+    taskContent.style.visibility = "hidden";
+  } else {
+    taskDiv.style.height = "400px";
+    taskContent.style.display = "block";
+    taskContent.style.visibility = "visible";
+  }
+};
 
 // EventListeners
 document.addEventListener("DOMContentLoaded", () => {
-    showTasks();
-    document.querySelectorAll(".task").forEach(taskDiv => {
-        taskDiv.querySelector(".taskTitleName").addEventListener("click", () => {
-            expandTask(taskDiv.id);
-        });
-    });
-})
+  // Show the tasks stored in storage
+  showTasks();
 
-document.addEventListener("DOMContentLoaded", () => {
+  // If a task title has been clicked, expand it
+  // Or if expanded, collapse it
+  document.querySelectorAll(".task").forEach((taskDiv) => {
+    taskDiv.querySelector(".taskTitleName").addEventListener("click", () => {
+      expandTask(taskDiv.id);
+    });
+  });
+
+  // Add task when the submit button clicked
   submitBtn.addEventListener("click", (event) => {
     event.preventDefault();
     addTask(taskTitle.value, taskDescription.value, taskPriority.value);
   });
 
-  document.querySelectorAll(".delete-btn").forEach(item => {
+  // Delete a task if delete button was clicked
+  document.querySelectorAll(".delete-btn").forEach((item) => {
     item.addEventListener("click", (event) => {
-        deleteTask(event.target.parentElement.id);
-    })
+      deleteTask(event.target.parentElement.id); // Button's parent element has task id
+    });
   });
 
-  document.querySelectorAll(".taskToggleCheckbox").forEach(checkbox => {
+  // Toggle checkbox for task completion
+  document.querySelectorAll(".taskToggleCheckbox").forEach((checkbox) => {
+    // Listen when a checkbox was changed
     checkbox.addEventListener("change", () => {
-        toggleTaskCompletion(checkbox.id);
-        checkbox.value = (checkbox.value == "true") ? "false" : "true";
-        
-        checkbox.parentElement.parentElement.classList.toggle('task-completed')
+      // Send the task id to change data
+      toggleTaskCompletion(checkbox.id);
+
+      // Chnage value in checkbox
+      checkbox.value = checkbox.value == "true" ? "false" : "true";
+
+      // Toggle checked / unchecked task for style
+      checkbox.parentElement.parentElement.classList.toggle("task-completed");
+    });
+  });
+
+  // Save button was clicked for changing task info
+  document.querySelectorAll(".save-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      // Grab the form and the edited contents
+      const editForm = btn.parentElement;
+      const editedTitle = editForm.querySelector(".editTitleInput").value;
+      const editedDescription = editForm.querySelector(".taskDescriptionName").value;
+
+      const updates = {
+        _title: editedTitle,
+        _description: editedDescription
+      }
+
+      updateTask(editForm.id, updates);
+    });
+  });
+
+  // Listen when a priority button was clicked to let the user select priority from options
+  document.querySelectorAll(".prioritySelectBtn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      btn.nextElementSibling.classList.toggle("show");
+    });
+  });
+
+  // If user clicks outside of dropdown box close the box
+  window.addEventListener("click", (event) => {
+    if (!event.target.matches(".prioritySelectBtn")) {
+      let dropdowns = document.getElementsByClassName("dropdown-content");
+      for (let openDropdown of dropdowns) {
+        if (openDropdown.classList.contains("show")) {
+          openDropdown.classList.remove("show");
+        }
+      }
+    }
+  });
+
+  // If different priority selected from the dropdown, then update the task
+  document.querySelectorAll(".dropdownContentBtn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      //  Grab the task id from the form
+      const taskId = btn.parentElement.id.slice(17);
+
+      // Store necessary information and pass it to the updateTask Func.
+      const updates = {
+        _priority: btn.dataset.priority,
+      };
+      updateTask(taskId, updates);
     });
   });
 });
-

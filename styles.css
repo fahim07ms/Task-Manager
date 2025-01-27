@@ -67,7 +67,8 @@ body {
   border-radius: 3px;
   cursor: pointer;
 }
-.complete-btn {
+.complete-btn,
+.save-btn {
   background-color: #4caf50;
   color: white;
   cursor: pointer;
@@ -103,7 +104,7 @@ body {
 
 .task {
   cursor: pointer;
-  transition: all 0.1s ease;
+  transition: all 0.2s ease-in-out;
   grid-template-rows: 30px 0px;
   grid-template-areas:
     "toggle title priority"
@@ -131,13 +132,13 @@ body {
   grid-area: taskContent;
   overflow: hidden;
   display: none;
-  height:  400px;
+  height: 400px;
   border-top: 1px solid rgba(148, 144, 144, 0.502);
   margin-top: 5px;
   padding: 10px;
   text-align: left;
   visibility: hidden;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease-in-out;
 }
 
 .taskEditForm input,
@@ -152,22 +153,81 @@ body {
 }
 
 .taskEditForm input {
-    border: none;
-    border-bottom: 1px solid rgba(124, 124, 124, 0.451);
+  border: none;
+  border-bottom: 1px solid rgba(124, 124, 124, 0.451);
 }
 
 .taskContent textarea {
-    border: none;
-    width: 550px;
-    height: 150px;
+  border: none;
+  width: 550px;
+  height: 150px;
 }
 
 .taskToggle {
   grid-area: toggle;
 }
 
-.taskPriorityName span {
+/* .taskPriorityName span {
   background-color: #f9fe54e2;
   padding: 0.6px 4px;
   border-radius: 5px;
+} */
+
+/* Priority selection dropdown */
+.prioritySelectBtn {
+  background-color: #f9fe54e2;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.prioritySelectBtn:hover,
+.prioritySelectBtn:focus {
+  opacity: 0.7;
+}
+
+.taskPriorityName {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #fff;
+  min-width: 150px;
+  overflow: auto;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  border-radius: 12px;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 6px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.taskPriorityName a:hover {
+  background-color: #ddd;
+}
+
+.show {
+  display: block;
+}
+
+.btn-high {
+    background-color: #dc6158ce;
+}
+
+.btn-medium {
+    background-color: #f9fe54e2;
+}
+
+.btn-low {
+    background-color: #7ccb60ce;
 }
