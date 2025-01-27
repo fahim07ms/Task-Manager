@@ -5,6 +5,7 @@ const taskDescription = document.getElementById("taskDescription");
 const taskPriority = document.getElementById("taskPriority");
 const submitBtn = document.getElementById("taskSubmitBtn");
 const taskList = document.getElementById("taskList");
+const sortByTaskPriority = document.querySelector("#sortByTaskPriority");
 
 // BluePrint of a Task
 class Task {
@@ -128,6 +129,7 @@ const showMessage = (msg, type) => {
 // If no data, then provide a empty array
 const localData = JSON.parse(localStorage.getItem("tasks"));
 let tasks = localData ? localData : [];
+let sortedTasks = []
 
 // Add Task
 const addTask = (title, description, priority) => {
@@ -144,6 +146,8 @@ const addTask = (title, description, priority) => {
     // Show error message if any
     showMessage(err, "error");
   }
+
+  showTasks();
 };
 
 // Delete Task
@@ -162,6 +166,7 @@ const updateTask = (taskId, updates) => {
   tasks[taskIndex] = {
     ...tasks[taskIndex],
     ...updates,
+    _lastModified: new Date()
   };
 
   localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -194,9 +199,17 @@ const getPriorityColor = (priority) => {
 };
 
 // Show tasks
-const showTasks = () => {
+const showTasks = (tasklist=tasks) => {
+    while (taskList.children.length > 1) {
+        taskList.removeChild(taskList.lastElementChild);
+    }
+      
+  if (tasklist.length === 0) {
+    return;
+  }
+  // Delete the task listing except the first one
   // Iterate through the tasks
-  tasks.forEach((task) => {
+  tasklist.forEach((task) => {
     // For each task create a taskDiv with class `task`
     const taskDiv = document.createElement("div");
     taskDiv.classList = ["task"];
@@ -272,6 +285,20 @@ const expandTask = (taskId) => {
     taskContent.style.visibility = "visible";
   }
 };
+
+// Sortin by priority
+const filter = (sortValue) => {
+    // If none then show all tasks
+    // Else show filtered tasks
+    if (sortValue === "none") {
+        sortedTasks = tasks;
+    } else {
+        sortedTasks = tasks.filter(task => task._priority === sortValue);
+    }
+
+    showTasks(sortedTasks);
+}
+
 
 // EventListeners
 document.addEventListener("DOMContentLoaded", () => {
@@ -363,4 +390,11 @@ document.addEventListener("DOMContentLoaded", () => {
       updateTask(taskId, updates);
     });
   });
+
+  // Listen if the select option for sorting is changed or not
+  // If changed then filter by value
+  sortByTaskPriority.addEventListener("change", () => {
+    filter(sortByTaskPriority.value);
+  });
+
 });

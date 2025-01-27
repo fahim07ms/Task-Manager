@@ -109,8 +109,8 @@ body {
   grid-template-areas:
     "toggle title priority"
     "taskContent taskContent taskContent";
-  border-left: 1px solid rgba(117, 117, 117, 0.668);
-  border-right: 1px solid rgba(117, 117, 117, 0.668);
+  /* border-left: 1px solid rgba(117, 117, 117, 0.668);
+  border-right: 1px solid rgba(117, 117, 117, 0.668); */
   height: 35px;
 }
 
@@ -132,13 +132,15 @@ body {
   grid-area: taskContent;
   overflow: hidden;
   display: none;
-  height: 400px;
+  height: 342px;
   border-top: 1px solid rgba(148, 144, 144, 0.502);
   margin-top: 5px;
   padding: 10px;
   text-align: left;
   visibility: hidden;
   transition: all 0.2s ease-in-out;
+  border-left: 1px solid rgba(117, 117, 117, 0.668);
+  border-right: 1px solid rgba(117, 117, 117, 0.668);
 }
 
 .taskEditForm input,
@@ -221,13 +223,32 @@ body {
 }
 
 .btn-high {
-    background-color: #dc6158ce;
+  background-color: #dc6158ce;
 }
 
 .btn-medium {
-    background-color: #f9fe54e2;
+  background-color: #f9fe54e2;
 }
 
 .btn-low {
-    background-color: #7ccb60ce;
+  background-color: #7ccb60ce;
+}
+
+#taskListTopMenu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#sortByTaskPriorityDiv span {
+    font-weight: 600;
+}
+
+#sortByTaskPriority {
+  size: 100px;
+  padding: 4px;
+  border: 1px solid #ddd;
+  background-color: white;
+  border-radius: 4px;
+  font-size: 16px;
 }

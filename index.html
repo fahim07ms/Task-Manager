@@ -37,8 +37,21 @@
       </form>
     </div>
 
+    <!-- Task List Top Bar -->
+    <div id="taskListTopMenu">
+      <h2>To-Do List</h2>
+      <div id="sortByTaskPriorityDiv">
+        <span>Filter by: </span>
+        <select id="sortByTaskPriority">
+          <option value="none">Select a filter</option>
+          <option value="low">Low Priority</option>
+          <option value="medium">Medium Priority</option>
+          <option value="high">High Priority</option>
+        </select>
+      </div>
+    </div>
+
     <!-- Task List Container -->
-    <h2>To-Do List</h2>
     <div id="taskList">
       <!-- List heading -->
       <div id="taskListHeading">
@@ -48,7 +61,7 @@
         <div id="taskTitleHeading">Title</div>
         <div id="taskPriorityHeading">Priority</div>
       </div>
-
+    </div>  
     <script src="taskManager.js"></script>
   </body>
 </html>
