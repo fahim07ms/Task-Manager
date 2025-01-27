@@ -92,7 +92,7 @@ class Task {
   }
 
   set isCompleted(isCompleted) {
-    isCompleted = !isCompleted;
+    this._isCompleted = isCompleted;
   }
 
   // JSON format of the task
@@ -163,13 +163,14 @@ const updateTask = (taskId, updates) => {};
 // Toggle Task Completion
 const toggleTaskCompletion = (taskId) => {
   // Filter out the wanted task's index
-  const taskIndex = tasks.findIndex((task) => task.id === taskIndex);
-  
+  const taskIndex = tasks.findIndex((task) => task.id === taskId);
+  console.log(taskIndex)
   // Toggle its completion value
-  tasks[taskIndex].isCompleted = !tasks[taskIndex].isCompleted;
-
+  tasks[taskIndex]._isCompleted = !tasks[taskIndex]._isCompleted;
+ console.log(tasks);
   // Modify it in the localStorage
   localStorage.setItem("tasks", JSON.stringify(tasks));
+
 };
 
 const getPriorityColor = (priority) => {
@@ -198,11 +199,11 @@ const showTasks = () => {
         taskDiv.id = task.id;
         
         taskDiv.innerHTML = `
-            <div class="taskToggle"><input type="checkbox" name="${task.id}" id="${task.id}" value="${task._isCompleted}"></div>
-            <div class="taskTitleName">${task._title}</div>
+            <div class="taskToggle"><input ${task._isCompleted ? "checked" : "unchecked"} class="taskToggleCheckbox" type="checkbox" name="${task.id}" id="${task.id}" value="${task._isCompleted}"></div>
+            <div class="taskTitleName">${(task._title.length <= 30) ? task._title : (task._title.slice(0, 30)+"...")}</div>
             <div class="taskContent">
                 <form id="${task.id}" class="taskEditForm">
-                    <b>Title: </b><input name="title" type="text" value="${task._title}" placeholder="Task title" required><br>
+                    <b>Title: </b><input size="50" name="title" type="text" value="${task._title}" placeholder="Task title" required><br>
                     <b>Description: </b><br>
                     <textarea name="description" class="taskDescriptionName" placeholder="Write something...">${task._description}</textarea>
                     <button name="save-btn" class="complete-btn" type="submit">Save</button>
@@ -211,7 +212,9 @@ const showTasks = () => {
             </div>
             <div class="taskPriorityName"><span style="background-color: ${getPriorityColor(task._priority)}">${task._priority[0].toUpperCase() + task._priority.slice(1)}</span></div>
         `;
-
+        if (task._isCompleted) {
+            taskDiv.classList.add("task-completed");
+        }
         taskList.appendChild(taskDiv);
     });
 }
@@ -228,7 +231,7 @@ const expandTask = (taskId) => {
         taskContent.style.display = "none";
         taskContent.style.visibility = "hidden";
     } else {
-        taskDiv.style.height = "380px";
+        taskDiv.style.height = "400px";
         taskContent.style.display = "block";
         taskContent.style.visibility = "visible";
     }    
@@ -254,6 +257,15 @@ document.addEventListener("DOMContentLoaded", () => {
     item.addEventListener("click", (event) => {
         deleteTask(event.target.parentElement.id);
     })
+  });
+
+  document.querySelectorAll(".taskToggleCheckbox").forEach(checkbox => {
+    checkbox.addEventListener("change", () => {
+        toggleTaskCompletion(checkbox.id);
+        checkbox.value = (checkbox.value == "true") ? "false" : "true";
+        
+        checkbox.parentElement.parentElement.classList.toggle('task-completed')
+    });
   });
 });
 

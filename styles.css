@@ -131,7 +131,7 @@ body {
   grid-area: taskContent;
   overflow: hidden;
   display: none;
-  height:  380px;
+  height:  400px;
   border-top: 1px solid rgba(148, 144, 144, 0.502);
   margin-top: 5px;
   padding: 10px;
@@ -149,6 +149,11 @@ body {
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 18px;
+}
+
+.taskEditForm input {
+    border: none;
+    border-bottom: 1px solid rgba(124, 124, 124, 0.451);
 }
 
 .taskContent textarea {
