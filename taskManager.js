@@ -3,9 +3,10 @@ const messageContainer = document.getElementById("message");
 const taskTitle = document.getElementById("taskTitle");
 const taskDescription = document.getElementById("taskDescription");
 const taskPriority = document.getElementById("taskPriority");
+const taskDueDate = document.querySelector("#taskDueDate");
 const submitBtn = document.getElementById("taskSubmitBtn");
 const taskList = document.getElementById("taskList");
-const sortByTaskPriority = document.querySelector("#sortByTaskPriority");
+const filterBy = document.querySelector("#filterBy");
 
 // BluePrint of a Task
 class Task {
@@ -17,8 +18,9 @@ class Task {
   #dateCreated;
   _lastModified;
   _isCompleted;
+  _dueDate;
 
-  constructor(title, description = "", priority, isCompleted = false) {
+  constructor(title, description = "", priority, isCompleted = false, dueDate) {
     this.#id = crypto.randomUUID();
     this.title = title;
     this.description = description;
@@ -26,6 +28,7 @@ class Task {
     this.#dateCreated = new Date();
     this.lastModified = new Date();
     this.isCompleted = isCompleted;
+    this.dueDate = dueDate;
   }
 
   // Getters
@@ -55,6 +58,10 @@ class Task {
 
   get isCompleted() {
     return this._isCompleted;
+  }
+
+  get dueDate() {
+    return this._dueDate;
   }
 
   // Setters
@@ -96,6 +103,10 @@ class Task {
     this._isCompleted = isCompleted;
   }
 
+  set dueDate(date) {
+    this._dueDate = new Date(date);
+  }
+
   // JSON format of the task
   toJSON() {
     return {
@@ -129,13 +140,13 @@ const showMessage = (msg, type) => {
 // If no data, then provide a empty array
 const localData = JSON.parse(localStorage.getItem("tasks"));
 let tasks = localData ? localData : [];
-let sortedTasks = []
+let sortedTasks = [];
 
 // Add Task
-const addTask = (title, description, priority) => {
+const addTask = (title, description, priority, dueDate = null) => {
   try {
     // Create a new task
-    const task = new Task(title, description, priority);
+    const task = new Task(title, description, priority, false, dueDate);
 
     // Push it in the tasks array and modify localStorage
     tasks.push(task);
@@ -166,7 +177,7 @@ const updateTask = (taskId, updates) => {
   tasks[taskIndex] = {
     ...tasks[taskIndex],
     ...updates,
-    _lastModified: new Date()
+    _lastModified: new Date(),
   };
 
   localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -199,11 +210,11 @@ const getPriorityColor = (priority) => {
 };
 
 // Show tasks
-const showTasks = (tasklist=tasks) => {
-    while (taskList.children.length > 1) {
-        taskList.removeChild(taskList.lastElementChild);
-    }
-      
+const showTasks = (tasklist = tasks) => {
+  while (taskList.children.length > 1) {
+    taskList.removeChild(taskList.lastElementChild);
+  }
+
   if (tasklist.length === 0) {
     return;
   }
@@ -217,24 +228,38 @@ const showTasks = (tasklist=tasks) => {
     // Set it's id to task's id
     taskDiv.id = task.id;
 
+    // Due time
+    let dueDate = new Date(task._dueDate).toLocaleString("en-US", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+
     // Add necessary HTML for the tasks
     taskDiv.innerHTML = `
-            <div class="taskToggle"><input ${
-              task._isCompleted ? "checked" : "unchecked"
-            } class="taskToggleCheckbox" type="checkbox" name="${
-      task.id
-    }" id="${task.id}" value="${task._isCompleted}">
+            <div class="taskToggle">
+                <input ${task._isCompleted ? "checked" : "unchecked"} 
+                class="taskToggleCheckbox" 
+                type="checkbox" 
+                name="${task.id}" 
+                id="${task.id}" 
+                value="${task._isCompleted}">
             </div>
            
             <div class="taskTitleName">${
               task._title.length <= 30
                 ? task._title
                 : task._title.slice(0, 30) + "..."
-            }</div>
+            }<br>
+                <span class="taskTitleDueDate">${dueDate != "Jan 01, 1970, 06:00 AM" ? dueDate : ""}</span>
+            </div>
 
             <div class="taskContent">
                 <form id="${task.id}" class="taskEditForm">
-                    <b>Title: </b><input size="50" class="editTitleInput" name="title" type="text" value="${
+                    <b>Title: </b><input size="45" class="editTitleInput" name="title" type="text" value="${
                       task._title
                     }" placeholder="Task title" required><br>
                     <b>Description: </b><br>
@@ -276,57 +301,66 @@ const expandTask = (taskId) => {
 
   // If not expanded than expand, else shrink
   if (taskContent.style.display === "block") {
-    taskDiv.style.height = "35px";
-    taskContent.style.display = "none";
+    taskDiv.style.height = "75px";
+    taskDiv.style.gridTemplateRows = "auto 0fr";
     taskContent.style.visibility = "hidden";
+    taskContent.style.display = "none";
   } else {
-    taskDiv.style.height = "400px";
+    taskDiv.style.height = "448px";
+    taskDiv.style.gridTemplateRows = "auto 1fr";
     taskContent.style.display = "block";
     taskContent.style.visibility = "visible";
   }
 };
 
-// Sortin by priority
+// Filtering tasks
 const filter = (sortValue) => {
-    // If none then show all tasks
-    // Else show filtered tasks
-    if (sortValue === "none") {
-        sortedTasks = tasks;
-    } else {
-        sortedTasks = tasks.filter(task => task._priority === sortValue);
-    }
+  // If none then show all tasks
+  // Else show filtered tasks
+  if (sortValue === "none") {
+    sortedTasks = tasks;
+  } else {
+    sortedTasks = tasks.filter((task) => task._priority === sortValue);
+  }
 
-    showTasks(sortedTasks);
-}
+  showTasks(sortedTasks);
+};
 
-
-// EventListeners
-document.addEventListener("DOMContentLoaded", () => {
-  // Show the tasks stored in storage
-  showTasks();
-
-  // If a task title has been clicked, expand it
-  // Or if expanded, collapse it
+// Listens if a task is clicked for expansion or collapse and do according to that
+const taskClicked = () => {
   document.querySelectorAll(".task").forEach((taskDiv) => {
     taskDiv.querySelector(".taskTitleName").addEventListener("click", () => {
       expandTask(taskDiv.id);
     });
   });
+};
 
-  // Add task when the submit button clicked
+// Listens if submit button is clicked for adding new task
+// If clicked it adds the task
+const addTaskSubmitBtnClick = () => {
   submitBtn.addEventListener("click", (event) => {
     event.preventDefault();
-    addTask(taskTitle.value, taskDescription.value, taskPriority.value);
+    addTask(
+      taskTitle.value,
+      taskDescription.value,
+      taskPriority.value,
+      taskDueDate.value
+    );
   });
+};
 
-  // Delete a task if delete button was clicked
+// Listens if a task is deleted or not
+// If done then it deletes it
+const taskDeleteBtnClick = () => {
   document.querySelectorAll(".delete-btn").forEach((item) => {
     item.addEventListener("click", (event) => {
       deleteTask(event.target.parentElement.id); // Button's parent element has task id
     });
   });
+};
 
-  // Toggle checkbox for task completion
+// Listens if a task is checked for completion or not
+const taskCompleteCheck = () => {
   document.querySelectorAll(".taskToggleCheckbox").forEach((checkbox) => {
     // Listen when a checkbox was changed
     checkbox.addEventListener("change", () => {
@@ -340,24 +374,32 @@ document.addEventListener("DOMContentLoaded", () => {
       checkbox.parentElement.parentElement.classList.toggle("task-completed");
     });
   });
+};
 
-  // Save button was clicked for changing task info
+// Listens if something edited in the task and is saved
+// If so, then it saves the updated task
+const saveEditedTaskBtn = () => {
   document.querySelectorAll(".save-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       // Grab the form and the edited contents
       const editForm = btn.parentElement;
       const editedTitle = editForm.querySelector(".editTitleInput").value;
-      const editedDescription = editForm.querySelector(".taskDescriptionName").value;
+      const editedDescription = editForm.querySelector(
+        ".taskDescriptionName"
+      ).value;
 
       const updates = {
         _title: editedTitle,
-        _description: editedDescription
-      }
+        _description: editedDescription,
+      };
 
       updateTask(editForm.id, updates);
     });
   });
+};
 
+// If a priority button is clicked, it shows the dropdown
+const priorityBtnClick = () => {
   // Listen when a priority button was clicked to let the user select priority from options
   document.querySelectorAll(".prioritySelectBtn").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -376,8 +418,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   });
+};
 
-  // If different priority selected from the dropdown, then update the task
+// If priority changes for any task it updates it
+const priorityChange = () => {
   document.querySelectorAll(".dropdownContentBtn").forEach((btn) => {
     btn.addEventListener("click", () => {
       //  Grab the task id from the form
@@ -390,11 +434,44 @@ document.addEventListener("DOMContentLoaded", () => {
       updateTask(taskId, updates);
     });
   });
+};
 
-  // Listen if the select option for sorting is changed or not
-  // If changed then filter by value
-  sortByTaskPriority.addEventListener("change", () => {
-    filter(sortByTaskPriority.value);
+// Listens if filter is changed or not
+// If changed then show the filtered task
+const changeFilter = () => {
+  filterBy.addEventListener("change", () => {
+    filter(filterBy.value);
   });
+};
 
+// EventListeners
+document.addEventListener("DOMContentLoaded", () => {
+  // Show the tasks stored in storage
+  showTasks();
+
+  // If a task title has been clicked, expand it
+  // Or if expanded, collapse it
+  taskClicked();
+
+  // Add task when the submit button clicked
+  addTaskSubmitBtnClick();
+
+  // Delete a task if delete button was clicked
+  taskDeleteBtnClick();
+
+  // Toggle checkbox for task completion
+  taskCompleteCheck();
+
+  // Save button was clicked for changing task info
+  saveEditedTaskBtn();
+
+  // Priority Btn clicked in the task
+  priorityBtnClick();
+
+  // If different priority selected from the dropdown, then update the task
+  priorityChange();
+
+  // Listen if the select option for filtering is changed or not
+  // If changed then filter by value
+  changeFilter();
 });

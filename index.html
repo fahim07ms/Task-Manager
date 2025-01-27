@@ -19,7 +19,7 @@
 
     <!-- Task Creation Container -->
     <div class="container">
-      <h1>Task Manager</h1>
+      <h1>Minimalistic Task Manager</h1>
 
       <!-- Task Input Form -->
       <form id="taskForm">
@@ -33,6 +33,8 @@
           <option value="medium">Medium Priority</option>
           <option value="high">High Priority</option>
         </select>
+        <label for="taskDueDate">Due date: </label>
+        <input id="taskDueDate" type="datetime-local">
         <button id="taskSubmitBtn" type="submit">Add Task</button>
       </form>
     </div>
@@ -40,9 +42,9 @@
     <!-- Task List Top Bar -->
     <div id="taskListTopMenu">
       <h2>To-Do List</h2>
-      <div id="sortByTaskPriorityDiv">
+      <div id="filterByDiv">
         <span>Filter by: </span>
-        <select id="sortByTaskPriority">
+        <select id="filterBy">
           <option value="none">Select a filter</option>
           <option value="low">Low Priority</option>
           <option value="medium">Medium Priority</option>
@@ -61,7 +63,7 @@
         <div id="taskTitleHeading">Title</div>
         <div id="taskPriorityHeading">Priority</div>
       </div>
-    </div>  
+    </div>
     <script src="taskManager.js"></script>
   </body>
 </html>
