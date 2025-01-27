@@ -238,6 +238,11 @@ const showTasks = (tasklist = tasks) => {
       hour12: true,
     });
 
+    let isoDate =
+      dueDate != "Jan 01, 1970, 06:00 AM"
+        ? new Date(task._dueDate).toISOString().slice(0, 16)
+        : new Date().toISOString().slice(0, 16);
+
     // Add necessary HTML for the tasks
     taskDiv.innerHTML = `
             <div class="taskToggle">
@@ -254,7 +259,9 @@ const showTasks = (tasklist = tasks) => {
                 ? task._title
                 : task._title.slice(0, 30) + "..."
             }<br>
-                <span class="taskTitleDueDate">${dueDate != "Jan 01, 1970, 06:00 AM" ? dueDate : ""}</span>
+                <span class="taskTitleDueDate">${
+                  dueDate != "Jan 01, 1970, 06:00 AM" ? dueDate : ""
+                }</span>
             </div>
 
             <div class="taskContent">
@@ -266,6 +273,8 @@ const showTasks = (tasklist = tasks) => {
                     <textarea name="description" class="taskDescriptionName" placeholder="Write something...">${
                       task._description
                     }</textarea>
+                    <label for="taskDueDate">Due date: </label>
+                    <input class="editDueDate" value="${isoDate}" type="datetime-local">
                     <button name="save-btn" class="save-btn" type="submit">Save</button>
                     <button name="delete-btn" class="delete-btn" type="submit">Delete</button>
                 </form>
@@ -387,10 +396,12 @@ const saveEditedTaskBtn = () => {
       const editedDescription = editForm.querySelector(
         ".taskDescriptionName"
       ).value;
+      const editedDueDate = editForm.querySelector(".editDueDate").value;
 
       const updates = {
         _title: editedTitle,
         _description: editedDescription,
+        _dueDate: editedDueDate,
       };
 
       updateTask(editForm.id, updates);
