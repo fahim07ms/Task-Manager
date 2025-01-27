@@ -144,8 +144,6 @@ const addTask = (title, description, priority) => {
     // Show error message if any
     showMessage(err, "error");
   }
-
-  showTasks();
 };
 
 // Delete Task
