@@ -239,7 +239,7 @@ const showTasks = (tasklist = tasks) => {
     });
 
     let isoDate =
-      dueDate != "Jan 01, 1970, 06:00 AM"
+      (dueDate != "Jan 01, 1970, 06:00 AM")
         ? new Date(task._dueDate).toISOString().slice(0, 16)
         : new Date().toISOString().slice(0, 16);
 
@@ -348,7 +348,6 @@ const taskClicked = () => {
 // If clicked it adds the task
 const addTaskSubmitBtnClick = () => {
   submitBtn.addEventListener("click", (event) => {
-    event.preventDefault();
     addTask(
       taskTitle.value,
       taskDescription.value,
