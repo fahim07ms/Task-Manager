@@ -1,5 +1,5 @@
 body {
-  font-family: Arial, sans-serif;
+  font-family: "Fira Code", serif;
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
@@ -7,14 +7,15 @@ body {
 }
 
 #message {
-    visibility: hidden;
-    padding: 20px;
-    text-align: center;
-    margin-bottom: 15px;
-    color: black;
-    font-weight: 800;
-    border-radius: 15px;
-    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  display: none;
+  padding: 14px;
+  text-align: center;
+  margin-bottom: 15px;
+  color: black;
+  font-weight: 800;
+  font-size: 24px;
+  border-radius: 15px;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
 .container {
@@ -38,10 +39,12 @@ body {
   border: 1px solid #ddd;
   border-radius: 4px;
 }
+
 #taskList {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  font-size: 18px;
 }
 .task-item {
   background: white;
@@ -67,8 +70,99 @@ body {
 .complete-btn {
   background-color: #4caf50;
   color: white;
+  cursor: pointer;
 }
+
 .delete-btn {
   background-color: #f44336;
   color: white;
+  cursor: pointer;
+}
+
+#taskIcon {
+  width: 24px;
+  height: 24px;
+}
+
+#taskListHeading,
+.task {
+  border-bottom: 1px solid rgba(117, 117, 117, 0.668);
+  text-align: center;
+  display: grid;
+  grid-template-columns: 0.2fr 1.8fr 0.5fr;
+  padding-bottom: 5px;
+  box-sizing: border-box;
+}
+
+#taskTitleHeading,
+#taskPriorityHeading,
+.taskTitleName,
+.taskPriorityName {
+  border-left: 1px solid rgba(117, 117, 117, 0.668);
+}
+
+.task {
+  cursor: pointer;
+  transition: all 0.1s ease;
+  grid-template-rows: 30px 0px;
+  grid-template-areas:
+    "toggle title priority"
+    "taskContent taskContent taskContent";
+  border-left: 1px solid rgba(117, 117, 117, 0.668);
+  border-right: 1px solid rgba(117, 117, 117, 0.668);
+  height: 35px;
+}
+
+.task:hover {
+  box-shadow: grey 0px 1px;
+}
+
+.taskTitleName {
+  text-align: left;
+  padding-left: 10px;
+  grid-area: title;
+}
+
+.taskPriorityName {
+  grid-area: priority;
+}
+
+.taskContent {
+  grid-area: taskContent;
+  overflow: hidden;
+  display: none;
+  height:  380px;
+  border-top: 1px solid rgba(148, 144, 144, 0.502);
+  margin-top: 5px;
+  padding: 10px;
+  text-align: left;
+  visibility: hidden;
+  transition: all 0.2s ease;
+}
+
+.taskEditForm input,
+.taskEditForm textarea,
+.taskEditForm select,
+.taskEditForm button {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 18px;
+}
+
+.taskContent textarea {
+    border: none;
+    width: 550px;
+    height: 150px;
+}
+
+.taskToggle {
+  grid-area: toggle;
+}
+
+.taskPriorityName span {
+  background-color: #f9fe54e2;
+  padding: 0.6px 4px;
+  border-radius: 5px;
 }

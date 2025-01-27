@@ -4,6 +4,14 @@
     <meta charset="UTF-8" />
     <title>Task Management App</title>
     <link rel="stylesheet" href="styles.css" />
+
+    <!-- Fira Code -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <!-- Message -->
@@ -27,10 +35,39 @@
         </select>
         <button id="taskSubmitBtn" type="submit">Add Task</button>
       </form>
-
-      <!-- Task List Container -->
-      <div id="taskList"></div>
     </div>
+
+    <!-- Task List Container -->
+    <h2>To-Do List</h2>
+    <div id="taskList">
+      <!-- List heading -->
+      <div id="taskListHeading">
+        <div id="taskCompletionHeading">
+          <img id="taskIcon" src="/assets/tasks.svg" alt="Tasks icon" />
+        </div>
+        <div id="taskTitleHeading">Title</div>
+        <div id="taskPriorityHeading">Priority</div>
+      </div>
+
+      <div class="task">
+        <div class="taskToggle">
+          <input
+            type="checkbox"
+            name="${task.id}"
+            id="${task.id}"
+            value="${task._isCompleted}"
+          />
+        </div>
+        <div class="taskTitleName">${task._title}</div>
+        <div class="taskContent">
+            <div class="taskDescriptionName">This is the task description</div>
+        </div>
+        <div class="taskPriorityName">
+          <span>high</span>
+        </div>
+      </div>
+    </div>
+
     <script src="taskManager.js"></script>
   </body>
 </html>

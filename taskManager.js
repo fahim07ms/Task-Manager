@@ -61,9 +61,8 @@ class Task {
     title = title.trim();
     if (title === "" || typeof title !== "string") {
       throw new Error("Invalid title");
-    } else {
-      this._title = title;
     }
+    this._title = title;
   }
 
   set description(description) {
@@ -115,12 +114,13 @@ const showMessage = (msg, type) => {
   else messageContainer.style.backgroundColor = "#e3df6ee8";
 
   // Make it visible
-  messageContainer.style.visibility = "visible";
+  messageContainer.style.display = "block";
   messageContainer.innerText = msg;
 
   // Hide it after 3 secs
   setTimeout(() => {
-    messageContainer.style.visibility = "hidden";
+    messageContainer.style.display = "none";
+    messageContainer.innerText = "";
   }, 3000);
 };
 
@@ -138,10 +138,14 @@ const addTask = (title, description, priority) => {
     // Push it in the tasks array and modify localStorage
     tasks.push(task);
     localStorage.setItem("tasks", JSON.stringify(tasks));
+    
+    showMessage("Task added successfully!", "success");
   } catch (err) {
     // Show error message if any
     showMessage(err, "error");
   }
+
+  showTasks();
 };
 
 // Delete Task
@@ -149,6 +153,8 @@ const deleteTask = (taskId) => {
   // Filter out the tasks and modify the localStorage
   tasks = tasks.filter((task) => task.id !== taskId);
   localStorage.setItem("tasks", JSON.stringify(tasks));
+
+  showTasks();
 };
 
 // Update Task
@@ -166,11 +172,88 @@ const toggleTaskCompletion = (taskId) => {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 };
 
+const getPriorityColor = (priority) => {
+    switch(priority)
+    {
+        case "high":
+            return "#dc6158ce";
+            break;
+        case "low":
+            return "#7ccb60ce";
+            break;
+        case "medium":
+            return "#f9fe54e2";
+            break;
+    }
+};
+
+// Show tasks
+const showTasks = () => {
+    // Iterate through the tasks
+    // For each task create a taskDiv
+    // Add it in the `taskList` container in the HTML
+    tasks.forEach(task => {
+        const taskDiv = document.createElement('div');
+        taskDiv.classList = ['task'];
+        taskDiv.id = task.id;
+        
+        taskDiv.innerHTML = `
+            <div class="taskToggle"><input type="checkbox" name="${task.id}" id="${task.id}" value="${task._isCompleted}"></div>
+            <div class="taskTitleName">${task._title}</div>
+            <div class="taskContent">
+                <form id="${task.id}" class="taskEditForm">
+                    <b>Title: </b><input name="title" type="text" value="${task._title}" placeholder="Task title" required><br>
+                    <b>Description: </b><br>
+                    <textarea name="description" class="taskDescriptionName" placeholder="Write something...">${task._description}</textarea>
+                    <button name="save-btn" class="complete-btn" type="submit">Save</button>
+                    <button name="delete-btn" class="delete-btn" type="submit">Delete</button>
+                </form>
+            </div>
+            <div class="taskPriorityName"><span style="background-color: ${getPriorityColor(task._priority)}">${task._priority[0].toUpperCase() + task._priority.slice(1)}</span></div>
+        `;
+
+        taskList.appendChild(taskDiv);
+    });
+}
+
+// Expand the individual task when clicked
+const expandTask = (taskId) => {
+    // Grab the task div and the content/expandable section
+    const taskDiv = document.getElementById(taskId);
+    const taskContent = taskDiv.querySelector('.taskContent');
+
+    // If not expanded than expand, else shrink
+    if (taskContent.style.display === 'block') {
+        taskDiv.style.height = "35px";
+        taskContent.style.display = "none";
+        taskContent.style.visibility = "hidden";
+    } else {
+        taskDiv.style.height = "380px";
+        taskContent.style.display = "block";
+        taskContent.style.visibility = "visible";
+    }    
+}
+
 // EventListeners
+document.addEventListener("DOMContentLoaded", () => {
+    showTasks();
+    document.querySelectorAll(".task").forEach(taskDiv => {
+        taskDiv.querySelector(".taskTitleName").addEventListener("click", () => {
+            expandTask(taskDiv.id);
+        });
+    });
+})
+
 document.addEventListener("DOMContentLoaded", () => {
   submitBtn.addEventListener("click", (event) => {
     event.preventDefault();
-
     addTask(taskTitle.value, taskDescription.value, taskPriority.value);
   });
+
+  document.querySelectorAll(".delete-btn").forEach(item => {
+    item.addEventListener("click", (event) => {
+        deleteTask(event.target.parentElement.id);
+    })
+  });
 });
+
